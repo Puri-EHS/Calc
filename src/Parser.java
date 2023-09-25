@@ -3,11 +3,11 @@
 // Top          := Assignment
 //              |  Expression
 // Assignment   := <id> = Expression
-// Expression   := MulExpr <addop> Expression
+// Expression   := Expression <addop> MulExpr
 //              |  MulExpr
-// MulExpr      := PowExpr <mulop> MulExpr
+// MulExpr      := MulExpr <mulop> PowExpr
 //              |  PowExpr
-// PowExpr      := RawExpr <powop> PowExpr
+// PowExpr      := PowExpr <powop> RawExpr
 //              |  RawExpr
 // RawExpr      := <id>
 //              |  <number>
@@ -48,21 +48,27 @@ class Parser {
         }
 
         int checkpoint = lexer.checkpoint();
-        Expression expr1 = parseExpression(level - 1);
-        if (expr1 != null) {
-            Token<?> token = lexer.getToken();
-            if (token.isOp(levels[level - 1])) {
-                Expression expr2 = parseExpression(level);
-                if (expr2 != null) {
-                    return new BinopExpression(token.getOp(), expr1, expr2);
-                }
-            }
-        }
-        lexer.restore(checkpoint);
-
         Expression expr = parseExpression(level - 1);
         if (expr != null) {
+            Expression newExpr = parseNextBinop(expr, level);
+            while (newExpr != null) {
+                expr = newExpr;
+                newExpr = parseNextBinop(expr, level);
+            }
             return expr;
+        }
+        lexer.restore(checkpoint);
+        return null;
+    }
+
+    private Expression parseNextBinop(Expression expr, int level) {
+        int checkpoint = lexer.checkpoint();
+        Token<?> token = lexer.getToken();
+        if (token.isOp(levels[level - 1])) {
+            Expression next = parseExpression(level - 1);
+            if (next != null) {
+                return new BinopExpression(token.getOp(), expr, next);
+            }
         }
         lexer.restore(checkpoint);
         return null;
