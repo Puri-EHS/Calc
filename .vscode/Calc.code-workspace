@@ -1,0 +1,14 @@
+{
+    "folders": [
+        {
+            "path": ".."
+        },
+        {
+            "name": "Documents",
+            "path": "../.."
+        }
+    ],
+    "settings": {
+        "java.dependency.packagePresentation": "flat"
+    }
+}
