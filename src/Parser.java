@@ -13,6 +13,7 @@
 //              |  <number>
 //              |  ( Expression )
 //              |  <string>
+//              |  <boolean>
 
 class Parser {
     private Lexer lexer;
