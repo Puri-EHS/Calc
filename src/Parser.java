@@ -12,6 +12,7 @@
 // RawExpr      := <id>
 //              |  <number>
 //              |  ( Expression )
+//              |  <string>
 
 class Parser {
     private Lexer lexer;
